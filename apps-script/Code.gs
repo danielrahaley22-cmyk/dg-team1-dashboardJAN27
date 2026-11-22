@@ -9,7 +9,7 @@
  *  - emails you a summary of the week every Sunday at 8pm (weeklySummary)
  *
  * Setup (once):
- *  1. In the sheet: Extensions > Apps Script, paste this file over everything, Save.
+ *  1. Open script.new (or Extensions > Apps Script in the sheet), paste this file over everything, Save.
  *  2. Pick "setup" in the function menu at the top and press Run. Allow access
  *     when Google asks. This makes the Outreach tab and the Sunday email.
  *  3. Deploy > New deployment > Web app:
@@ -31,6 +31,8 @@ var SALES_SHEET_ID = '1Duvr9aJTaH5AMA4l6slkpIb5CQDR2j48I18FQAEaGr8';
 var SALES_RANGE = 'Data!A1:J3000';
 var SALES_STATE = 'Melbourne';
 
+// The "DG Team 1 Outreach (Bob)" sheet, where the ticks are saved.
+var OUTREACH_SHEET_ID = '1oNlAL7z2pokQ2mLW8Rgp2b13cfI7eG7ScA_D6HOBEgY';
 var OUTREACH_TAB = 'Outreach';
 var HEADERS = ['Week', 'Code', 'Name', 'Instagram', 'Focus', 'Sent', 'Replied', 'Comment', 'Updated'];
 var TZ = 'Australia/Melbourne';
@@ -198,7 +200,7 @@ function weeklySummary() {
     'Replied:\n' + list(replied) + '\n\n' +
     'Messaged, no reply yet:\n' + list(noReply) + '\n\n' +
     'In focus but not messaged yet:\n' + list(notSent) + '\n\n' +
-    'Full log: ' + SpreadsheetApp.getActiveSpreadsheet().getUrl();
+    'Full log: ' + SpreadsheetApp.openById(OUTREACH_SHEET_ID).getUrl();
 
   var to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
   MailApp.sendEmail({
@@ -223,7 +225,7 @@ function setup() {
 }
 
 function outreachSheet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(OUTREACH_SHEET_ID);
   var sheet = ss.getSheetByName(OUTREACH_TAB);
   if (!sheet) {
     sheet = ss.insertSheet(OUTREACH_TAB, 0);
