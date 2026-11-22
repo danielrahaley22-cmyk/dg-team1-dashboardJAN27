@@ -296,7 +296,7 @@ h2{margin:0 0 2px;font-size:15px;font-weight:900;text-transform:uppercase;letter
     if (!rs.length) { list.innerHTML = '<div class="muted">No one matches.</div>'; return; }
     rs.forEach(function (p) {
       var tk = tickOf(p.code);
-      var card = document.createElement("div"); card.className = "p" + (tk.focus ? " focus" : "");
+      var card = document.createElement("div"); card.className = "p" + (tk.focus ? " focus" : ""); card.dataset.code = p.code;
       var left = document.createElement("div");
       var code = document.createElement("div"); code.className = "code"; code.textContent = p.code;
       var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = p.name || "Name not on file";
@@ -315,17 +315,17 @@ h2{margin:0 0 2px;font-size:15px;font-weight:900;text-transform:uppercase;letter
 
       var ticks = document.createElement("div"); ticks.className = "ticks";
       [["focus", "Focus", "f"], ["sent", "Sent", "s"], ["replied", "Replied", "r"]].forEach(function (x) {
-        var bt = document.createElement("button"); bt.className = "tk " + x[2]; bt.textContent = x[1];
+        var bt = document.createElement("button"); bt.className = "tk " + x[2]; bt.textContent = x[1]; bt.dataset.f = x[0];
         bt.setAttribute("aria-pressed", String(!!tk[x[0]]));
         bt.setAttribute("aria-label", x[1] + " for " + p.code);
-        bt.addEventListener("click", function () { save(p.code, x[0], !tickOf(p.code)[x[0]], bt); });
+        bt.addEventListener("click", function () { save(p.code, x[0], !tickOf(p.code)[x[0]]); });
         ticks.appendChild(bt);
       });
 
       var cm = document.createElement("div"); cm.className = "cm";
       var inp = document.createElement("input"); inp.type = "text"; inp.maxLength = 500;
       inp.placeholder = "Comment (optional)"; inp.value = tk.comment || ""; inp.setAttribute("aria-label", "Comment for " + p.code);
-      var commit = function () { if (inp.value !== (tickOf(p.code).comment || "")) save(p.code, "comment", inp.value, inp); };
+      var commit = function () { if (inp.value !== (tickOf(p.code).comment || "")) save(p.code, "comment", inp.value); };
       inp.addEventListener("change", commit);
       inp.addEventListener("keydown", function (e) { if (e.key === "Enter") inp.blur(); });
       cm.appendChild(inp);
@@ -336,27 +336,42 @@ h2{margin:0 0 2px;font-size:15px;font-weight:900;text-transform:uppercase;letter
     });
   }
 
-  function save(code, field, value, el) {
-    var before = Object.assign({}, tickOf(code));
-    var next = Object.assign({}, before); next[field] = value;
+  // Update one promoter's card in place (no full redraw), plus the counts.
+  function paint(code) {
+    var card = document.querySelector('.p[data-code="' + code + '"]');
+    var tk = tickOf(code);
+    if (card) {
+      card.classList.toggle("focus", !!tk.focus);
+      card.querySelectorAll(".tk").forEach(function (b) { b.setAttribute("aria-pressed", String(!!tk[b.dataset.f])); });
+      var cm = card.querySelector(".cm");
+      if (cm) cm.hidden = !(tk.focus || tk.sent || tk.replied || tk.comment);
+    }
+    refresh(true);
+  }
+
+  // Ticks change on screen straight away. Saves for the same promoter are sent
+  // one after another so quick taps can't arrive out of order.
+  var queues = {};
+  function save(code, field, value) {
+    var next = Object.assign({}, tickOf(code)); next[field] = value;
     state.ticks[code] = next;
-    if (el) el.classList.add("saving");
-    if (field !== "comment") refresh();
+    paint(code);
     var body = { week: state.week, code: code }; body[field] = value;
-    fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        if (!res.ok) throw new Error(res.error);
-        state.ticks[code] = res.tick;
-        if (el) el.classList.remove("saving");
-        if (field === "comment") { toast("Comment saved for " + code); refresh(true); }
-        else refresh();
-      })
-      .catch(function () {
-        state.ticks[code] = before;
-        toast("Didn't save for " + code + ". Check your connection and try again.");
-        refresh();
-      });
+    queues[code] = (queues[code] || Promise.resolve()).then(function () {
+      return fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.error);
+          if (field === "comment") toast("Comment saved for " + code);
+        })
+        .catch(function () {
+          var undo = Object.assign({}, tickOf(code));
+          undo[field] = field === "comment" ? "" : !value;
+          state.ticks[code] = undo;
+          paint(code);
+          toast("Didn't save for " + code + ". Check your connection and tap again.");
+        });
+    });
   }
 
   document.querySelectorAll("[data-who]").forEach(function (b) {

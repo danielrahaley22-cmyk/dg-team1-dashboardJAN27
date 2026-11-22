@@ -60,17 +60,19 @@ function doPost(e) {
     var week = cleanWeek(d.week) || thisWeek();
     var code = String(d.code || '').trim().toUpperCase();
     if (!code) throw new Error('No code');
-    var team = readTeam();
+    var team = cachedTeam();
     var who = team.filter(function (r) { return r.code === code; })[0];
     if (!who) throw new Error('Code ' + code + " isn't on the Team 1 list");
 
     var sheet = outreachSheet();
-    var values = sheet.getDataRange().getValues();
+    // Only read Week and Code to find the row, then just that one row.
+    var last = sheet.getLastRow();
+    var keys = last > 1 ? sheet.getRange(2, 1, last - 1, 2).getValues() : [];
     var rowIndex = -1;
-    for (var i = 1; i < values.length; i++) {
-      if (weekKey(values[i][0]) === week && String(values[i][1]).toUpperCase() === code) { rowIndex = i; break; }
+    for (var i = keys.length - 1; i >= 0; i--) {
+      if (weekKey(keys[i][0]) === week && String(keys[i][1]).toUpperCase() === code) { rowIndex = i + 1; break; }
     }
-    var row = rowIndex > -1 ? values[rowIndex].slice(0, HEADERS.length)
+    var row = rowIndex > -1 ? sheet.getRange(rowIndex + 1, 1, 1, HEADERS.length).getValues()[0]
       : [week, code, who.name, who.instagram, false, false, false, '', ''];
     row[0] = week;
     row[2] = who.name;
@@ -81,11 +83,10 @@ function doPost(e) {
     if (d.comment !== undefined) row[7] = clean(d.comment, 500);
     row[8] = new Date();
 
-    var target = rowIndex > -1 ? rowIndex + 1 : sheet.getLastRow() + 1;
-    sheet.getRange(target, 1).setNumberFormat('@');
+    var target = rowIndex > -1 ? rowIndex + 1 : last + 1;
+    if (rowIndex < 0) sheet.getRange(target, 1).setNumberFormat('@');
     sheet.getRange(target, 1, 1, HEADERS.length).setValues([row]);
-    sheet.getRange(target, 5, 1, 3).insertCheckboxes();
-    SpreadsheetApp.flush();
+    if (rowIndex < 0) sheet.getRange(target, 5, 1, 3).insertCheckboxes();
     return json({ ok: true, tick: tickFromRow(row) });
   } catch (err) {
     return json({ ok: false, error: String(err) });
@@ -96,8 +97,26 @@ function doPost(e) {
 
 /* ---------- data ---------- */
 
-function buildData(week) {
-  var team = readTeam();
+// Team and sales change rarely, so they are kept for 5 minutes to make the
+// page and every tick faster. Ticks are always read fresh.
+function cachedTeam() {
+  var c = CacheService.getScriptCache(), v = c.get('team');
+  if (v) return JSON.parse(v);
+  var t = readTeam();
+  c.put('team', JSON.stringify(t), 300);
+  return t;
+}
+
+function cachedPeople() {
+  var c = CacheService.getScriptCache(), v = c.get('people');
+  if (v) return JSON.parse(v);
+  var p = buildPeople();
+  try { c.put('people', JSON.stringify(p), 300); } catch (e) {}
+  return p;
+}
+
+function buildPeople() {
+  var team = cachedTeam();
   var sales = readSales();
   var people = team.map(function (r) {
     var s = sales.byCode[r.code];
@@ -110,6 +129,11 @@ function buildData(week) {
       lastSale: s ? s.lastSale : ''
     };
   });
+  return { people: people, melTotal: sales.total, salesTo: sales.latest };
+}
+
+function buildData(week) {
+  var p = cachedPeople();
   var ticks = readTicks();
   var weeks = {};
   weeks[thisWeek()] = true;
@@ -118,10 +142,10 @@ function buildData(week) {
     week: week,
     thisWeek: thisWeek(),
     weeks: Object.keys(weeks).sort().reverse(),
-    people: people,
+    people: p.people,
     ticks: ticks.filter(function (t) { return t.week === week; }),
-    melTotal: sales.total,
-    salesTo: sales.latest
+    melTotal: p.melTotal,
+    salesTo: p.salesTo
   };
 }
 
