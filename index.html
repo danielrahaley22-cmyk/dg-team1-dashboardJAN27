@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bob's Team Dashboard · DG Team 1</title>
+<style>
+:root{--bg:#0d0e14;--panel:#16171f;--panel2:#1c1d27;--line:#2a2b38;--fg:#f2f1f7;--muted:#a3a1b5;--purple:#8b5cf6;--soft:rgba(139,92,246,.16);--green:#34d399;--amber:#fbbf24;--red:#f87171;--blue:#60a5fa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums;-webkit-text-size-adjust:100%}
+.wrap{max-width:1100px;margin:0 auto;padding:18px}
+a{color:#c4b5fd}
+.head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#6d28d9);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#fff;flex:none}
+.kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{margin:2px 0 0;font-size:26px;line-height:1.05;font-weight:900;text-transform:uppercase;letter-spacing:.02em}
+.note{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:380px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:96px}
+.card .l{font-size:12px;color:var(--muted)}
+.card .v{font-size:30px;font-weight:800;margin:4px 0 2px}
+.card .s{font-size:11.5px;color:var(--muted)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:16px}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
+.row .sec{margin-bottom:0}
+h2{margin:0 0 2px;font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.sub{font-size:12px;color:var(--muted);margin:0 0 12px}
+.week{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.week li{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+.week b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#c4b5fd;margin-bottom:2px}
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(80px,auto) 1fr 34px;gap:8px;align-items:center;font-size:12px}
+.bar .c{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .t{height:20px;border-radius:4px;background:#7c3aed}
+.bar:first-child .t{background:#a855f7}
+.bar .n{text-align:right;font-weight:700}
+.outhead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.outhead select,.filters select,.filters input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit}
+.ocards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ocard .v{font-size:24px;font-weight:800}
+.ocard .l{font-size:12px;color:var(--muted)}
+.how{font-size:12.5px;color:var(--muted);margin:12px 0 0;line-height:1.5}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.who button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.who button[aria-pressed="true"]{border-color:var(--purple);background:var(--soft)}
+.who button:focus-visible{outline:2px solid var(--purple)}
+.who b{display:block;font-size:13px}
+.who small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.who .n{font-size:20px;font-weight:800}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 10px;align-items:center}
+.filters input{min-width:180px;flex:1}
+.count{font-size:12px;color:var(--muted)}
+.list{display:grid;gap:8px}
+.p{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:1fr auto;gap:8px 14px;align-items:start}
+.p.focus{border-color:rgba(139,92,246,.55)}
+.p .code{font-weight:800;letter-spacing:.02em}
+.p .nm{font-size:12.5px;color:var(--muted)}
+.p .ig{font-size:12.5px}
+.p .stats{font-size:12px;color:var(--muted);margin-top:4px}
+.p .stats b{color:var(--fg)}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;white-space:nowrap;margin-right:6px}
+.p-active{background:rgba(52,211,153,.15);color:var(--green)}
+.p-slow{background:rgba(251,191,36,.15);color:var(--amber)}
+.p-quiet{background:rgba(248,113,113,.14);color:var(--red)}
+.p-none{background:rgba(163,161,181,.14);color:var(--muted)}
+.ticks{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tk{all:unset;cursor:pointer;font-size:12px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:6px 11px;color:var(--muted);background:var(--panel);white-space:nowrap;user-select:none}
+.tk::before{content:"○ "}
+.tk[aria-pressed="true"]{color:#fff}
+.tk[aria-pressed="true"]::before{content:"✓ "}
+.tk.f[aria-pressed="true"]{background:#6d28d9;border-color:#8b5cf6}
+.tk.s[aria-pressed="true"]{background:#1d4ed8;border-color:#60a5fa}
+.tk.r[aria-pressed="true"]{background:#047857;border-color:#34d399}
+.tk:focus-visible{outline:2px solid var(--purple)}
+.tk.saving{opacity:.55}
+.cm{grid-column:1/-1}
+.cm input{width:100%;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit}
+.cm input::placeholder{color:#6f6d82}
+.muted{color:var(--muted)}
+.err{color:var(--red)}
+.foot{font-size:12px;color:var(--muted);margin:4px 0 0}
+.banner{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.4);color:var(--fg);border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:16px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#232433;border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:13px;display:none;z-index:9}
+@media (max-width:560px){.wrap{padding:12px}h1{font-size:21px}.card .v{font-size:24px}.p{grid-template-columns:1fr}.ticks{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="brand">
+      <div class="logo">DG</div>
+      <div>
+        <div class="kicker">Dangerous Goods XXL 2027 · Melbourne Team 1</div>
+        <h1>Bob's Team Dashboard</h1>
+      </div>
+    </div>
+    <div class="note">Your team is the Team 1 final list (<span data-k="team">—</span> promoters). Melbourne sales up to <span data-k="salesTo">—</span>, from the latest Megatix report.</div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <div class="cards">
+    <div class="card"><div class="l">Tickets sold, Melbourne</div><div class="v" data-k="tickets">—</div><div class="s">All time, your team's codes</div></div>
+    <div class="card"><div class="l">Promoters who have sold</div><div class="v" data-k="selling">—</div><div class="s">of <span data-k="team">—</span> on your team</div></div>
+    <div class="card"><div class="l">No sales yet</div><div class="v" data-k="noSales">—</div><div class="s">Reach out by Instagram DM</div></div>
+    <div class="card"><div class="l">Sold in the last 7 days</div><div class="v" data-k="last7">—</div><div class="s">tickets, from <span data-k="last7p">—</span> promoters</div></div>
+    <div class="card"><div class="l">Share of Melbourne</div><div class="v" data-k="share">—</div><div class="s">of <span data-k="melTotal">—</span> Melbourne tickets</div></div>
+  </div>
+
+  <div class="sec" id="outreach">
+    <div class="outhead">
+      <div>
+        <h2>This week's outreach</h2>
+        <p class="sub" style="margin:0">Tick as you go. Everything saves straight away.</p>
+      </div>
+      <label class="muted" style="font-size:12px">Week of <select id="weekSel" aria-label="Week"></select></label>
+    </div>
+    <div class="ocards">
+      <div class="ocard"><div class="v" data-k="oFocus">—</div><div class="l">In focus</div></div>
+      <div class="ocard"><div class="v" data-k="oSent">—</div><div class="l">Messaged</div></div>
+      <div class="ocard"><div class="v" data-k="oReplied">—</div><div class="l">Replied</div></div>
+    </div>
+    <p class="how"><b style="color:var(--fg)">How it works:</b> On Monday, tick <b style="color:#c4b5fd">Focus</b> on the promoters in this week's focus group. Tick <b style="color:var(--blue)">Sent</b> once you've messaged them, and <b style="color:var(--green)">Replied</b> when they get back to you. Add a comment if it helps (optional). A new week starts every Monday.</p>
+  </div>
+
+  <div class="row">
+    <div class="sec">
+      <h2>Your week</h2>
+      <p class="sub">The weekly rhythm for team leads.</p>
+      <ul class="week">
+        <li><b>Monday</b>Get this week's messaging focus from Lauren and tick Focus on those promoters.</li>
+        <li><b>Tuesday to Friday</b>Personally message the promoters in focus. Tick Sent, then Replied when they get back to you.</li>
+        <li><b>Thursday 6pm</b>Send the weekly share post into DG PROMOTER 1 and get everyone sharing it on their stories with their link or code. Keep track of who posts.</li>
+        <li><b>Friday (due by Sunday)</b>Send Lauren a quick summary: how the week went, feedback from your messages, any blockers and incentive ideas. Aim for Friday, Sunday at the latest.</li>
+      </ul>
+    </div>
+    <div class="sec">
+      <h2>Top sellers</h2>
+      <p class="sub">Your top 10 by Melbourne tickets, all time.</p>
+      <div class="bars" id="bars"><span class="muted">—</span></div>
+    </div>
+  </div>
+
+  <div class="sec" id="team">
+    <h2>Who to contact</h2>
+    <p class="sub">Shortcuts that filter your list below. Tap one again to show everyone.</p>
+    <div class="who">
+      <button data-who="focus" aria-pressed="false"><span><b>This week's focus</b><small>Everyone ticked Focus this week</small></span><span class="n" data-n="focus">—</span></button>
+      <button data-who="noreply" aria-pressed="false"><span><b>Messaged, no reply yet</b><small>Sent but not replied this week</small></span><span class="n" data-n="noreply">—</span></button>
+      <button data-who="quiet" aria-pressed="false"><span><b>Past sellers gone quiet</b><small>Sold before, nothing in 6+ weeks</small></span><span class="n" data-n="quiet">—</span></button>
+      <button data-who="slow" aria-pressed="false"><span><b>Slowing down</b><small>Last sale 3 to 6 weeks ago</small></span><span class="n" data-n="slow">—</span></button>
+      <button data-who="active" aria-pressed="false"><span><b>Selling right now</b><small>Sold in the last 3 weeks</small></span><span class="n" data-n="active">—</span></button>
+      <button data-who="none" aria-pressed="false"><span><b>No sales yet</b><small>Haven't sold a ticket</small></span><span class="n" data-n="none">—</span></button>
+    </div>
+    <div class="filters">
+      <input type="search" id="q" placeholder="Search code, name or Instagram" aria-label="Search your team">
+      <select id="st" aria-label="Sales status"><option value="">Any sales status</option><option>Active</option><option>Slowing</option><option>Gone quiet</option><option>No sales yet</option></select>
+      <select id="sort" aria-label="Sort"><option value="tix">Most tickets</option><option value="recent">Most recent sale</option><option value="code">Code A–Z</option></select>
+      <span class="count" id="count">—</span>
+    </div>
+    <div class="list" id="list"><div class="muted">Loading your team…</div></div>
+  </div>
+
+  <p class="foot">Active = sold in the last 3 weeks. Slowing = last sale 3 to 6 weeks ago. Gone quiet = no sale in 6+ weeks. Tickets are Melbourne event sales on each promoter's code.</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  // Paste the Google Apps Script web app URL here (ends in /exec)
+  var SCRIPT_URL = "PASTE_SCRIPT_URL_HERE";
+
+  var state = { data: null, ticks: {}, who: null, week: null };
+  var $ = function (s) { return document.querySelector(s); };
+  var fmt = function (n) { return Number(n || 0).toLocaleString("en-AU"); };
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  function parseDate(s) {
+    s = String(s || "").trim(); if (!s) return null;
+    var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(+m[1], +m[2] - 1, +m[3], 12);
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (m) return new Date(+m[3], +m[2] - 1, +m[1], 12);
+    var d = new Date(s.replace(/\s+\d{1,2}:\d{2}.*/, ""));
+    return isNaN(d) ? null : d;
+  }
+  function pretty(d) { return d ? DAYS[d.getDay()] + " " + d.getDate() + " " + MONTHS[d.getMonth()] : "—"; }
+  function status(p) {
+    if (!(p.tickets > 0)) return "No sales yet";
+    var d = parseDate(p.lastSale);
+    if (!d) return "Gone quiet";
+    var days = (Date.now() - d.getTime()) / 864e5;
+    return days <= 21 ? "Active" : days <= 42 ? "Slowing" : "Gone quiet";
+  }
+  var pillCls = { "Active": "p-active", "Slowing": "p-slow", "Gone quiet": "p-quiet", "No sales yet": "p-none" };
+  function tickOf(code) { return state.ticks[code] || { focus: false, sent: false, replied: false, comment: "" }; }
+  var WHO = {
+    focus: function (p) { return tickOf(p.code).focus; },
+    noreply: function (p) { var t = tickOf(p.code); return t.sent && !t.replied; },
+    quiet: function (p) { return p.status === "Gone quiet"; },
+    slow: function (p) { return p.status === "Slowing"; },
+    active: function (p) { return p.status === "Active"; },
+    none: function (p) { return p.status === "No sales yet"; }
+  };
+
+  function setK(k, v) { document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) { el.textContent = v; }); }
+  function toast(msg) {
+    var t = $("#toast"); t.textContent = msg; t.style.display = "block";
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.style.display = "none"; }, 3500);
+  }
+  function banner(msg) { var b = $("#banner"); b.hidden = !msg; b.textContent = msg || ""; }
+
+  function load(week) {
+    if (!/^https:\/\/script\.google\.com\//.test(SCRIPT_URL)) {
+      banner("This dashboard isn't connected yet. Paste the Apps Script web app link into SCRIPT_URL in index.html.");
+      $("#list").innerHTML = '<div class="muted">Not connected yet.</div>';
+      return;
+    }
+    $("#list").innerHTML = '<div class="muted">Loading your team…</div>';
+    fetch(SCRIPT_URL + (week ? "?week=" + encodeURIComponent(week) : ""))
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.error || "Error");
+        banner("");
+        apply(res.data);
+      })
+      .catch(function () {
+        banner("Couldn't load your team just now. Check your connection and refresh the page.");
+        $("#list").innerHTML = '<div class="err">Couldn\'t load your team.</div>';
+      });
+  }
+
+  function apply(d) {
+    d.people.forEach(function (p) { p.status = status(p); });
+    state.data = d; state.week = d.week; state.ticks = {};
+    d.ticks.forEach(function (t) { state.ticks[t.code] = t; });
+
+    var sel = $("#weekSel"); sel.innerHTML = "";
+    d.weeks.forEach(function (w) {
+      var o = document.createElement("option"); o.value = w;
+      o.textContent = pretty(parseDate(w)) + (w === d.thisWeek ? " (this week)" : "");
+      if (w === d.week) o.selected = true; sel.appendChild(o);
+    });
+
+    var ppl = d.people, tix = 0, l7 = 0, l7p = 0, selling = 0;
+    ppl.forEach(function (p) { tix += p.tickets; l7 += p.last7; if (p.last7 > 0) l7p++; if (p.tickets > 0) selling++; });
+    setK("team", fmt(ppl.length)); setK("tickets", fmt(tix)); setK("selling", fmt(selling));
+    setK("noSales", fmt(ppl.length - selling)); setK("last7", fmt(l7)); setK("last7p", fmt(l7p));
+    setK("melTotal", fmt(d.melTotal)); setK("share", d.melTotal ? Math.round(100 * tix / d.melTotal) + "%" : "—");
+    setK("salesTo", pretty(parseDate(d.salesTo)));
+
+    var top = ppl.filter(function (p) { return p.tickets > 0; }).sort(function (a, b) { return b.tickets - a.tickets; }).slice(0, 10);
+    var max = top.length ? top[0].tickets : 1, bars = $("#bars"); bars.innerHTML = "";
+    if (!top.length) bars.innerHTML = '<span class="muted">No sales yet.</span>';
+    top.forEach(function (p) {
+      var r = document.createElement("div"); r.className = "bar";
+      r.title = p.code + ": " + p.tickets + " tickets" + (p.last7 ? ", " + p.last7 + " this week" : "");
+      var c = document.createElement("span"); c.className = "c"; c.textContent = p.code;
+      var tw = document.createElement("div"); var t = document.createElement("div"); t.className = "t"; t.style.width = Math.max(3, 100 * p.tickets / max) + "%"; tw.appendChild(t);
+      var n = document.createElement("span"); n.className = "n"; n.textContent = p.tickets;
+      r.append(c, tw, n); bars.appendChild(r);
+    });
+    refresh();
+  }
+
+  function refresh(skipList) {
+    if (!state.data) return;
+    var ppl = state.data.people, f = 0, s = 0, r = 0;
+    ppl.forEach(function (p) { var t = tickOf(p.code); if (t.focus) f++; if (t.sent) s++; if (t.replied) r++; });
+    setK("oFocus", f); setK("oSent", s); setK("oReplied", r);
+    document.querySelectorAll("[data-n]").forEach(function (el) { el.textContent = ppl.filter(WHO[el.dataset.n]).length; });
+    if (!skipList) drawList();
+  }
+
+  function rows() {
+    var q = $("#q").value.trim().toLowerCase(), st = $("#st").value, sort = $("#sort").value;
+    var out = state.data.people.filter(function (p) {
+      return (!state.who || WHO[state.who](p)) && (!st || p.status === st) &&
+        (!q || [p.code, p.name, p.instagram].some(function (x) { return String(x || "").toLowerCase().indexOf(q) > -1; }));
+    });
+    var t = function (p) { var d = parseDate(p.lastSale); return d ? d.getTime() : 0; };
+    out.sort(sort === "code" ? function (a, b) { return a.code.localeCompare(b.code); }
+      : sort === "recent" ? function (a, b) { return t(b) - t(a); }
+      : function (a, b) { return b.tickets - a.tickets || a.code.localeCompare(b.code); });
+    return out;
+  }
+
+  function drawList() {
+    var list = $("#list"), rs = rows();
+    $("#count").textContent = "Showing " + rs.length + " of " + state.data.people.length;
+    list.innerHTML = "";
+    if (!rs.length) { list.innerHTML = '<div class="muted">No one matches.</div>'; return; }
+    rs.forEach(function (p) {
+      var tk = tickOf(p.code);
+      var card = document.createElement("div"); card.className = "p" + (tk.focus ? " focus" : "");
+      var left = document.createElement("div");
+      var code = document.createElement("div"); code.className = "code"; code.textContent = p.code;
+      var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = p.name || "Name not on file";
+      left.append(code, nm);
+      var ig = String(p.instagram || "").split(/\s*\/\s*/)[0].trim(), igc = ig.replace(/^@/, "");
+      if (igc && /^[A-Za-z0-9._]+$/.test(igc)) {
+        var a = document.createElement("a"); a.className = "ig"; a.href = "https://instagram.com/" + igc; a.target = "_blank"; a.rel = "noopener"; a.textContent = "@" + igc;
+        var w = document.createElement("div"); w.appendChild(a); left.appendChild(w);
+      }
+      var stats = document.createElement("div"); stats.className = "stats";
+      var pill = document.createElement("span"); pill.className = "pill " + pillCls[p.status]; pill.textContent = p.status;
+      stats.appendChild(pill);
+      var b = document.createElement("b"); b.textContent = p.tickets; stats.appendChild(b);
+      stats.appendChild(document.createTextNode(" tickets" + (p.last7 ? " · " + p.last7 + " this week" : "") + (p.lastSale ? " · last sale " + pretty(parseDate(p.lastSale)) : "")));
+      left.appendChild(stats);
+
+      var ticks = document.createElement("div"); ticks.className = "ticks";
+      [["focus", "Focus", "f"], ["sent", "Sent", "s"], ["replied", "Replied", "r"]].forEach(function (x) {
+        var bt = document.createElement("button"); bt.className = "tk " + x[2]; bt.textContent = x[1];
+        bt.setAttribute("aria-pressed", String(!!tk[x[0]]));
+        bt.setAttribute("aria-label", x[1] + " for " + p.code);
+        bt.addEventListener("click", function () { save(p.code, x[0], !tickOf(p.code)[x[0]], bt); });
+        ticks.appendChild(bt);
+      });
+
+      var cm = document.createElement("div"); cm.className = "cm";
+      var inp = document.createElement("input"); inp.type = "text"; inp.maxLength = 500;
+      inp.placeholder = "Comment (optional)"; inp.value = tk.comment || ""; inp.setAttribute("aria-label", "Comment for " + p.code);
+      var commit = function () { if (inp.value !== (tickOf(p.code).comment || "")) save(p.code, "comment", inp.value, inp); };
+      inp.addEventListener("change", commit);
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") inp.blur(); });
+      cm.appendChild(inp);
+      // The comment box shows once a promoter has any tick, to keep the list short.
+      cm.hidden = !(tk.focus || tk.sent || tk.replied || tk.comment);
+      card.append(left, ticks, cm);
+      list.appendChild(card);
+    });
+  }
+
+  function save(code, field, value, el) {
+    var before = Object.assign({}, tickOf(code));
+    var next = Object.assign({}, before); next[field] = value;
+    state.ticks[code] = next;
+    if (el) el.classList.add("saving");
+    if (field !== "comment") refresh();
+    var body = { week: state.week, code: code }; body[field] = value;
+    fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.error);
+        state.ticks[code] = res.tick;
+        if (el) el.classList.remove("saving");
+        if (field === "comment") { toast("Comment saved for " + code); refresh(true); }
+        else refresh();
+      })
+      .catch(function () {
+        state.ticks[code] = before;
+        toast("Didn't save for " + code + ". Check your connection and try again.");
+        refresh();
+      });
+  }
+
+  document.querySelectorAll("[data-who]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.who = state.who === b.dataset.who ? null : b.dataset.who;
+      document.querySelectorAll("[data-who]").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.who === state.who)); });
+      if (state.data) drawList();
+    });
+  });
+  ["#q", "#st", "#sort"].forEach(function (s) { $(s).addEventListener("input", function () { if (state.data) drawList(); }); });
+  $("#weekSel").addEventListener("change", function (e) { load(e.target.value); });
+
+  load();
+})();
+</script>
+</body>
+</html>
