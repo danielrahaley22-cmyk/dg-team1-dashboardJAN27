@@ -1,7 +1,7 @@
 /**
  * DG Team 1 dashboard – Bob's weekly outreach.
  *
- * Attached to the "DG Team 1 Outreach" sheet. It:
+ * Saves to the "DG Team 1 Outreach (Bob)" sheet (OUTREACH_SHEET_ID). It:
  *  - sends the dashboard Bob's team (code, name, Instagram only), their
  *    Melbourne sales and this week's ticks (doGet)
  *  - saves each Focus / Sent / Replied tick and comment as a row in the
